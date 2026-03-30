@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valac Rainy - รับทำป้ายและปล่อยเช่ารหัส</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        valac: {
+                            bg: '#F1DCCD',       /* ครีมน้ำตาลอ่อน */
+                            brown: '#C29D93',    /* น้ำตาลอมชมพู */
+                            dark: '#AF8B87',     /* น้ำตาลหม่น */
+                            pink: '#FFBFCC',     /* ชมพูพาสเทลสดใส */
+                            soft: '#FFD4DF',     /* ชมพูอ่อน */
+                            light: '#FFE0ED',    /* ชมพูขาว */
+                            textDark: '#5c4543', /* สีตัวอักษรหลัก */
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 8px 25px rgba(175, 139, 135, 0.1)',
+                    },
+                    animation: {
+                        blob: "blob 7s infinite",
+                        pulseSoft: "pulseSoft 3s ease-in-out infinite",
+                        sway: "sway 4s ease-in-out infinite",
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(20px, -30px) scale(1.05)" },
+                            "66%": { transform: "translate(-15px, 15px) scale(0.95)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" },
+                        },
+                        pulseSoft: {
+                            "0%, 100%": { opacity: 1 },
+                            "50%": { opacity: 0.8 },
+                        },
+                        sway: {
+                            "0%, 100%": { transform: "rotate(-8deg)" },
+                            "50%": { transform: "rotate(8deg)" },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --valac-bg: #F1DCCD;
+            --valac-brown: #C29D93;
+            --valac-dark: #AF8B87;
+            --valac-pink: #FFBFCC;
+            --valac-soft: #FFD4DF;
+            --valac-light: #FFE0ED;
+        }
+        body {
+            background-color: #FAFAFC;
+            color: #5c4543;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* 🎀 เพิ่มลายจุด Polka Dot ที่พื้นหลัง */
+        .bg-dots {
+            background-color: #FDFBF9;
+            background-image: radial-gradient(#FFD4DF 2.5px, transparent 2.5px);
+            background-size: 30px 30px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        .modal-open { overflow: hidden; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.93);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 212, 223, 0.6);
+        }
+        .placeholder-img {
+            background-color: #FFE0ED;
+            border: 2px dashed #FFBFCC;
+            color: #AF8B87;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border-radius: 16px;
+            min-height: 120px;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body class="antialiased font-sans flex justify-center selection:bg-valac-pink selection:text-white">
+
+    <main class="w-full max-w-[480px] min-h-screen relative pb-16 bg-dots shadow-2xl sm:my-8 sm:rounded-[40px] overflow-hidden border border-gray-100">
+        
+        <div class="absolute top-0 left-0 w-full z-20 pointer-events-none">
+            <svg viewBox="0 0 100 20" class="w-full h-8" preserveAspectRatio="none">
+                <defs>
+                    <pattern id="awning" x="0" y="0" width="10" height="20" patternUnits="userSpaceOnUse">
+                        <rect x="0" y="0" width="5" height="20" fill="#FFE0ED"/> <rect x="5" y="0" width="5" height="20" fill="#FFB6C1"/> </pattern>
+                </defs>
+                <path d="M0,0 H100 V10 Q95,20 90,10 Q85,20 80,10 Q75,20 70,10 Q65,20 60,10 Q55,20 50,10 Q45,20 40,10 Q35,20 30,10 Q25,20 20,10 Q15,20 10,10 Q5,20 0,10 Z" fill="url(#awning)"/>
+            </svg>
+        </div>
+
+        <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            <div class="absolute top-[-5%] left-[-10%] w-[300px] h-[300px] bg-valac-pink rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-blob"></div>
+            <div class="absolute top-[30%] right-[-10%] w-[350px] h-[350px] bg-valac-brown rounded-full mix-blend-multiply filter blur-[90px] opacity-30 animate-blob" style="animation-delay: 2s;"></div>
+            <div class="absolute bottom-[10%] left-[5%] w-[250px] h-[250px] bg-valac-light rounded-full mix-blend-multiply filter blur-[70px] opacity-50 animate-blob" style="animation-delay: 4s;"></div>
+            
+            <i class="fa-solid fa-star absolute top-[15%] right-[10%] text-valac-pink text-2xl opacity-60 animate-sway"></i>
+            <i class="fa-solid fa-moon absolute top-[40%] left-[8%] text-valac-brown text-3xl opacity-40 animate-sway" style="animation-delay: 1s;"></i>
+            <i class="fa-solid fa-cloud absolute bottom-[35%] right-[12%] text-valac-pink text-2xl opacity-50 animate-sway" style="animation-delay: 2s;"></i>
+        </div>
+
+        <div class="relative z-10">
+            <header class="pt-16 pb-8 px-6 text-center relative flex flex-col items-center">
+                
+                <img src="att.ctdOa8m2Rm7co73YbZCK-qGnCSax0CgmpEle3rzVd4U.jpeg" alt="แบนเนอร์ร้าน Valac Rainy" class="w-full rounded-[16px] mb-4 shadow-sm relative z-10">
+                
+                <h1 class="text-4xl font-bold text-valac-textDark mb-2 tracking-wide animate-pulseSoft">
+                    Valac Rainy
+                </h1>
+                <p class="text-[15px] leading-relaxed text-valac-dark mt-2 font-medium">
+                    รับทำป้าย , ปล่อยเช่ารหัส และอื่นๆ <br>
+                    สนใจบริการทักแชทสอบถามได้เลยนะคะ
+                </p>
+                <button onclick="openModal()" class="mt-6 bg-valac-brown text-white py-3 px-6 rounded-full font-medium text-[15px] shadow-md hover:bg-valac-dark active:scale-95 transition-all inline-flex items-center gap-2 relative">
+                    <i class="fa-solid fa-folder-open"></i> ดูตัวอย่างงานและหัวป้าย
+                </button>
+            </header>
+
+            <section class="px-5 mb-8 relative">
+                <div class="glass-card p-6 rounded-[28px] shadow-soft">
+                    <h2 class="font-bold text-xl mb-4 flex items-center gap-2 text-valac-textDark border-b border-valac-light pb-3">
+                        <i class="fa-solid fa-tags text-valac-pink bg-valac-light p-2 rounded-full text-sm"></i> เรทราคาป้าย Identity V
+                    </h2>
+                    
+                    <img src="เรทราคา.png" alt="เรทราคาป้าย Identity V - Valac Rainy" class="w-full rounded-[16px] mb-4 shadow-sm">
+
+                    <div class="bg-valac-light/50 rounded-2xl p-4 mb-4 border border-valac-soft text-center">
+                        <div class="font-bold text-lg text-valac-textDark">หัวป้าย เริ่มต้น <span class="whitespace-nowrap">15 b</span></div>
+                    </div>
+                    
+                    <div class="space-y-3 text-[14px] mb-5">
+                        <div class="font-semibold text-valac-dark flex items-center gap-1.5"><i class="fa-solid fa-star text-valac-pink text-xs"></i> เรทเรียงสกิน:</div>
+                        <ul class="space-y-2 text-valac-textDark ml-5 border-l-2 border-valac-soft pl-3">
+                            <li><span class="font-medium">1 - 50 สกิน : <span class="whitespace-nowrap">45 THB</span></span> <br><span class="text-xs text-valac-brown whitespace-nowrap">(เกิน + สกินละ 0.5 b)</span></li>
+                            <li><span class="font-medium">100 + สกิน : <span class="whitespace-nowrap">80 THB</span></span> <br><span class="text-xs text-valac-brown whitespace-nowrap">(เกิน + สกินละ 0.5 b)</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white/80 p-4 rounded-2xl text-[14px] border border-white space-y-2 mb-4">
+                        <div class="font-semibold text-valac-textDark mb-1">บริการเสริม:</div>
+                        <div class="flex justify-between items-center border-b border-gray-100 pb-1.5 gap-2">
+                            <span>ป้ายข้างบอกราคาเช่า กรณีทำป้ายกับร้าน</span>
+                            <span class="font-bold whitespace-nowrap">+ 10 b</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-1 pt-1 gap-2">
+                            <span>กรณีเตรียมป้ายมาเอง</span>
+                            <span class="font-bold whitespace-nowrap">20 b</span>
+                        </div>
+                    </div>
+
+                    <div class="text-[13px] text-valac-brown italic bg-valac-bg p-3 rounded-xl mb-4 leading-relaxed">
+                        <span class="font-semibold not-italic text-valac-dark">หมายเหตุ:</span> บรีฟสีได้ <span class="whitespace-nowrap">(หากหัวป้ายบางอันเปลี่ยนไม่ได้จะแจ้งนะคะ)</span>, แก้งานได้ค่ะ
+                    </div>
+
+                    <div class="text-center font-bold text-[15px] bg-valac-pink text-white py-2 rounded-xl shadow-sm">
+                        ❗ ยอดเกิน 100 FREE หัวป้าย ❗
+                    </div>
+                </div>
+            </section>
+
+            <section class="px-5 mb-8 relative">
+                <i class="fa-solid fa-cat absolute -top-4 right-8 text-valac-pink text-3xl opacity-50 animate-sway pointer-events-none z-0"></i>
+
+                <div class="glass-card p-6 rounded-[28px] shadow-soft relative z-10">
+                    <h2 class="font-bold text-xl mb-4 flex items-center gap-2 text-valac-textDark border-b border-valac-light pb-3">
+                        <i class="fa-solid fa-cart-shopping text-valac-pink bg-valac-light p-2 rounded-full text-sm"></i> รายละเอียดการสั่งงาน
+                    </h2>
+
+                    <img src="วิธีสั่งงาน.png" alt="วิธีสั่งงานป้าย - Valac Rainy" class="w-full rounded-[16px] mb-4 shadow-sm">
+
+                    <div class="bg-red-50 text-red-600 text-[13px] font-medium p-3 rounded-xl mb-5 border border-red-100 flex items-start gap-2">
+                        <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+                        <span>รบกวนเปลี่ยนภาษาเป็นภาษาอังกฤษก่อนแคปนะคะ เพื่อความสะดวกในการทำงานค่ะ</span>
+                    </div>
+
+                    <h3 class="font-semibold text-valac-dark mb-3 text-[15px]">ขั้นตอนการสั่ง:</h3>
+                    <ol class="space-y-3 text-[14px] text-valac-textDark ml-1 relative mb-6">
+                        <div class="absolute left-[11px] top-2 bottom-2 w-[2px] bg-valac-soft -z-10"></div>
+                        
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-valac-pink text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
+                            <span class="mt-0.5">เลือกหัวป้ายที่ต้องการ</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-valac-pink text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
+                            <span class="mt-0.5">เปลี่ยนสีไหมคะ ? หากเปลี่ยนระบุสีที่ต้องการ<br><span class="text-valac-brown text-[13px]">ex. แดง ดำ , ชมพูฟ้าเหลือง</span></span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-valac-pink text-white flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
+                            <span class="mt-0.5">ป้ายเช่า / ป้ายขายไอดี</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-valac-pink text-white flex items-center justify-center text-xs font-bold flex-shrink-0">4</div>
+                            <span class="mt-0.5">รับป้ายข้างด้วยมั้ยคะ <span class="whitespace-nowrap">( + 10 b )</span></span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-valac-pink text-white flex items-center justify-center text-xs font-bold flex-shrink-0">5</div>
+                            <div class="mt-0.5 w-full">
+                                <span>แจ้งรายละเอียดป้าย:</span>
+                                <ul class="bg-white/70 p-3 rounded-xl border border-valac-light mt-2 space-y-1.5 text-[13px]">
+                                    <li>• ระบบ <span class="whitespace-nowrap">(ios / AD)</span></li>
+                                    <li>• ชื่อเฟซ/ชื่อที่ให้เขียนกำกับบนป้าย</li>
+                                    <li>• ระบุราคา <span class="whitespace-nowrap">( ป้ายขาย )</span></li>
+                                    <li>• ระบุเรทเช่า <span class="whitespace-nowrap">( ป้ายเช่า )</span></li>
+                                    <li>• ระบุจำนวนสกิน <span class="whitespace-nowrap">( SS / S / A )</span></li>
+                                    <li>• ระบุบ้าน <span class="whitespace-nowrap">( หรือไม่ใส่แจ้งได้ค่ะ )</span></li>
+                                    <li>• ระบุตัวละครบนหัวป้าย</li>
+                                    <li>• แชร์สกินได้มั้ย <span class="whitespace-nowrap">( ถ้าได้จะเขียนบนป้ายให้ค่ะ )</span></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ol>
+
+                    <div class="space-y-3 text-[13px]">
+                        <div class="bg-valac-light/40 p-3 rounded-xl border border-valac-soft">
+                            <span class="font-semibold text-valac-dark">ข้อมูลเพิ่มเติม:</span> แคปสกิน, แคปเครื่องประดับ, แคปสัตว์เลี้ยง <span class="whitespace-nowrap">( ใช้กรณีเหลือพื้นที่ว่าง )</span>
+                        </div>
+                        
+                        <div class="bg-white/70 p-3 rounded-xl border border-gray-100">
+                            <div class="font-semibold text-valac-dark mb-1">เวลาทำงาน:</div>
+                            <p>โดยปกติจะใช้เวลา <span class="whitespace-nowrap">1-3 วัน</span> หากสุดวิสัยจะแจ้งเสมอค่ะ</p>
+                            
+                            <div class="mt-2 pt-2 border-t border-gray-100">
+                                <span class="font-semibold text-red-500">งานเร่ง:</span>
+                                <ul class="list-none mt-1 space-y-1 text-valac-textDark">
+                                    <li>* งานหัวป้าย เร่ง <span class="whitespace-nowrap">+ 20 b</span> <span class="whitespace-nowrap">( 5 - 8 hr )</span></li>
+                                    <li>* งานป้ายข้าง เร่ง <span class="whitespace-nowrap">+ 20 b</span> <span class="whitespace-nowrap">( 4 - 6 hr )</span></li>
+                                </ul>
+                                <p class="text-red-500 mt-1 italic">* งานป้ายเต็มไม่รับเร่งนะคะ</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/70 p-3 rounded-xl border border-gray-100 flex items-center gap-3">
+                            <i class="fa-solid fa-wallet text-valac-brown text-xl"></i>
+                            <div>
+                                <div class="font-semibold text-valac-dark">การชำระเงิน:</div>
+                                <p>สามารถเลือกโอนเต็ม / มัดจำ 50% ได้ค่ะ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="px-5 mb-10 relative">
+                <div class="glass-card p-6 rounded-[28px] shadow-soft">
+                    <h2 class="font-bold text-xl mb-4 flex items-center gap-2 text-valac-textDark border-b border-valac-light pb-3">
+                        <i class="fa-solid fa-circle-question text-valac-pink bg-valac-light p-2 rounded-full text-sm"></i> ข้อสงสัย/FAQ
+                    </h2>
+
+                    <img src="ข้อสงสัย.png" alt="ข้อสงสัยป้าย - Valac Rainy" class="w-full rounded-[16px] mb-4 shadow-sm">
+
+                    <div class="space-y-4">
+                        <div class="bg-white/80 p-4 rounded-2xl shadow-sm border border-valac-soft/50 relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-valac-pink"></div>
+                            <p class="text-[14px] text-valac-dark leading-relaxed">
+                                <span class="font-semibold text-valac-textDark text-[15px] block mb-1">เนื้อหา:</span>
+                                ทุกหัวป้ายสามารถทำเป็นป้ายไอเดนได้ทั้งหมดนะคะ
+                            </p>
+                            <p class="text-[14px] text-valac-dark leading-relaxed mt-3">
+                                <span class="font-semibold text-valac-textDark text-[15px] block mb-1">รายละเอียด:</span>
+                                เนื่องจากบล็อกส่วนมากแม่ค้านำมาจากกลุ่ม rov จะคงบล็อกเดิมไว้เปลี่ยนเพียงรายละเอียดต่างๆ ให้สอดคล้องกับไอเดนเท่านั้น ดังนั้นบางส่วนไม่สามารถแก้ไขเกินขอบเขตบล็อกเดิมได้ โดยจะแจ้งไว้ก่อนนะคะ
+                            </p>
+                            <p class="text-[14px] text-valac-dark leading-relaxed mt-3">
+                                <span class="font-semibold text-valac-textDark text-[15px] block mb-1">ตัวอย่าง:</span>
+                                โดยป้ายที่เคยทำแล้ว จะนำตัวอย่างที่เป็นไอเดนไปใส่ให้นะคะ
+                            </p>
+                            <div class="mt-3 bg-valac-pink/10 p-2 rounded-lg border border-valac-pink/30">
+                                <span class="font-semibold text-valac-pink block">สถานะปัจจุบัน:</span>
+                                <span class="text-[14px] text-valac-textDark">ปัจจุบันรับทำแต่ป้ายไอเดนนะคะ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="px-5 mt-10 mb-12 flex flex-col items-center relative z-10">
+                <h2 class="font-bold text-2xl text-valac-textDark mb-6 tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-address-card text-valac-brown animate-pulseSoft"></i> Contact
+                </h2>
+
+                <div class="w-full max-w-[320px] space-y-3">
+                    <a href="https://www.facebook.com/share/1De6NiueGU/?mibextid=wwXIfr" target="_blank" class="bg-white/90 backdrop-blur-md border border-valac-soft text-valac-textDark rounded-full py-3.5 px-6 flex justify-center items-center gap-3 text-[15px] font-medium transition hover:bg-valac-pink hover:text-white hover:border-valac-pink shadow-sm group">
+                        <i class="fa-brands fa-facebook text-[#1877F2] text-xl group-hover:text-white transition-colors"></i> FB : Valac Rainy
+                    </a>
+                    <a href="https://line.me/ti/p/xnh050s5VP" target="_blank" class="bg-white/90 backdrop-blur-md border border-valac-soft text-valac-textDark rounded-full py-3.5 px-6 flex justify-center items-center gap-3 text-[15px] font-medium transition hover:bg-valac-pink hover:text-white hover:border-valac-pink shadow-sm group">
+                        <i class="fa-brands fa-line text-[#00B900] text-xl group-hover:text-white transition-colors"></i> Line : mochicun
+                    </a>
+                    <a href="https://www.instagram.com/manawprew?igsh=ZXo4eDVwb3Y0aGs%3D&utm_source=qr" target="_blank" class="bg-white/90 backdrop-blur-md border border-valac-soft text-valac-textDark rounded-full py-3.5 px-6 flex justify-center items-center gap-3 text-[15px] font-medium transition hover:bg-valac-pink hover:text-white hover:border-valac-pink shadow-sm group">
+                        <i class="fa-brands fa-instagram text-[#E1306C] text-xl group-hover:text-white transition-colors"></i> IG : manawprew
+                    </a>
+                </div>
+            </section>
+
+            <footer class="text-center pb-8 pt-4 relative z-10">
+                <p class="text-valac-brown font-medium flex items-center justify-center gap-2 text-[14px]">
+                    <i class="fa-solid fa-heart text-valac-pink animate-pulse"></i> Thank you for supporting Valac Rainy
+                </p>
+            </footer>
+        </div>
+
+        <div id="linkModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-5 transition-opacity duration-300 opacity-0 pointer-events-none">
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
+            
+            <div id="modalContent" class="bg-white/95 backdrop-blur-xl w-full max-w-[400px] rounded-[32px] p-6 relative z-10 transform scale-95 transition-all duration-300 shadow-2xl border border-valac-light flex flex-col max-h-[85vh]">
+                
+                <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 bg-valac-light rounded-full flex items-center justify-center text-valac-dark hover:bg-valac-pink hover:text-white transition-colors z-20">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+
+                <h3 class="font-bold text-xl text-center mb-6 mt-2 text-valac-textDark flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-images text-valac-pink animate-sway"></i> ลิงก์รวมผลงานร้าน
+                </h3>
+                
+                <div class="overflow-y-auto pr-1 pb-2 space-y-3 scrollbar-hide">
+                    <a href="https://drive.google.com/drive/folders/1wXT4OuUHjpQgW6ga3-einwZTu0FkuO8X" target="_blank" class="flex items-center gap-3 bg-valac-bg hover:bg-valac-soft p-4 rounded-2xl text-[15px] text-valac-textDark font-medium transition shadow-sm border border-valac-light group">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-book-open text-valac-brown group-hover:text-valac-pink transition"></i>
+                        </div>
+                        แคตตาล็อกหัวป้าย
+                    </a>
+
+                    <a href="https://drive.google.com/drive/folders/1J79pGVL2G_APg8rQm9KiaCoB0TBW6g-p" target="_blank" class="flex items-center gap-3 bg-valac-bg hover:bg-valac-soft p-4 rounded-2xl text-[15px] text-valac-textDark font-medium transition shadow-sm border border-valac-light group">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-star text-valac-brown group-hover:text-valac-pink transition"></i>
+                        </div>
+                        ตัวอย่างผลงาน
+                    </a>
+
+                    <a href="https://drive.google.com/drive/folders/10bfXPgB7S3kMGMsD4h91NDQqkpsPra24" target="_blank" class="flex items-center gap-3 bg-valac-pink text-white hover:bg-[#ffadbd] p-4 rounded-2xl text-[15px] font-medium transition shadow-md mt-4 group">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                            <i class="fa-brands fa-google-drive text-white group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        โฟลเดอร์ Drive รวมทั้งหมด
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const modal = document.getElementById('linkModal');
+        const modalContent = document.getElementById('modalContent');
+        const body = document.body;
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+                body.classList.add('modal-open');
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                body.classList.remove('modal-open');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
